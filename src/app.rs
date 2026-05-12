@@ -1,24 +1,20 @@
-use std::{path::Path, sync::Arc};
+use std::sync::Arc;
 
-use axum::{
-    Extension, Router,
-    routing::{get, get_service},
-};
+use axum::{Extension, Router, routing::get};
 use minijinja::Environment;
-use tower_http::services::ServeDir;
 
-use crate::{api, docs, web};
+use crate::{docs, routers};
 
 type AppResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 pub fn build_app() -> AppResult<Router> {
-    let templates = Arc::new(web::templates::load_templates(Path::new("templates"))?);
+    let templates = Arc::new(routers::pages::templates::load_templates()?);
 
-    let api_router = api::register_modules(Router::new(), api::all_modules());
+    let api_router = routers::api::register_modules(Router::new(), routers::api::all_modules());
 
     Ok(Router::new()
-        .route("/", get(web::home::home))
-        .nest_service("/static", get_service(ServeDir::new("static")))
+        .route("/", get(routers::pages::home::home))
+        .merge(routers::pages::static_files::router())
         .merge(api_router)
         .merge(docs::router())
         .layer(Extension::<Arc<Environment<'static>>>(templates)))

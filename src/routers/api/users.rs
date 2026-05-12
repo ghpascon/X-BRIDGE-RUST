@@ -1,14 +1,9 @@
 use axum::{Json, Router, routing::get};
-use serde::Serialize;
-use utoipa::ToSchema;
+
+use crate::schemas::users::UserSummary;
+use crate::services::user_service::UserService;
 
 use super::ApiModule;
-
-#[derive(Serialize, ToSchema)]
-pub struct UserSummary {
-    pub id: u64,
-    pub name: String,
-}
 
 #[utoipa::path(
     get,
@@ -19,10 +14,13 @@ pub struct UserSummary {
     )
 )]
 pub async fn list_users() -> Json<Vec<UserSummary>> {
-    Json(vec![UserSummary {
-        id: 1,
-        name: "Admin".to_string(),
-    }])
+    let users = UserService::list();
+    Json(
+        users
+            .into_iter()
+            .map(|u| UserSummary { id: u.id, name: u.name })
+            .collect(),
+    )
 }
 
 #[must_use]
