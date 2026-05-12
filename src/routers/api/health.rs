@@ -1,13 +1,9 @@
 use axum::{Json, Router, routing::get};
-use serde::Serialize;
-use utoipa::ToSchema;
+
+use crate::schemas::health::HealthResponse;
+use crate::services::health_service::HealthService;
 
 use super::ApiModule;
-
-#[derive(Serialize, ToSchema)]
-pub struct HealthResponse {
-    pub status: &'static str,
-}
 
 #[utoipa::path(
     get,
@@ -18,7 +14,10 @@ pub struct HealthResponse {
     )
 )]
 pub async fn ping() -> Json<HealthResponse> {
-    Json(HealthResponse { status: "ok" })
+    let status = HealthService::check();
+    Json(HealthResponse {
+        status: status.status,
+    })
 }
 
 #[must_use]

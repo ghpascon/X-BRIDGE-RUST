@@ -2,7 +2,8 @@ use axum::Router;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
-use crate::api::{health, users};
+use crate::routers::api::{health, users};
+use crate::schemas;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -12,8 +13,10 @@ use crate::api::{health, users};
     ),
     components(
         schemas(
-            health::HealthResponse,
-            users::UserSummary
+            schemas::health::HealthResponse,
+            schemas::users::UserSummary,
+            schemas::users::CreateUserRequest,
+            schemas::users::UserResponse
         )
     ),
     tags(
