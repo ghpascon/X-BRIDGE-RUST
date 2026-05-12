@@ -1,0 +1,16 @@
+[package]
+name = "x_bridge_rust"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8"
+minijinja = "2.12"
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
+tower-http = { version = "0.6", features = ["fs"] }
+utoipa = { version = "5", features = ["axum_extras"] }
+utoipa-swagger-ui = { version = "9", features = ["axum", "vendored"] }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
