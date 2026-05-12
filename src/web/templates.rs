@@ -2,9 +2,9 @@ use std::{fs, path::Path};
 
 use minijinja::Environment;
 
-type TemplateResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
-
-pub fn load_templates(root: &Path) -> TemplateResult<Environment<'static>> {
+pub fn load_templates(
+    root: &Path,
+) -> Result<Environment<'static>, Box<dyn std::error::Error + Send + Sync>> {
     let mut environment = Environment::new();
     add_templates_recursively(&mut environment, root, root)?;
     Ok(environment)
@@ -14,7 +14,7 @@ fn add_templates_recursively(
     environment: &mut Environment<'static>,
     root: &Path,
     current: &Path,
-) -> TemplateResult<()> {
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     for entry in fs::read_dir(current)? {
         let entry = entry?;
         let path = entry.path();

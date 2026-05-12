@@ -30,7 +30,7 @@ pub fn openapi_document() -> utoipa::openapi::OpenApi {
     document
 }
 
-pub fn filter_api_only_paths(document: &mut utoipa::openapi::OpenApi) {
+fn filter_api_only_paths(document: &mut utoipa::openapi::OpenApi) {
     document
         .paths
         .paths
