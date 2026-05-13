@@ -2,7 +2,7 @@ use x_bridge_rust::core::config::AppConfig;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let config = AppConfig::default();
+    let config = AppConfig::from_default_path()?;
     let app = x_bridge_rust::app::build_app()?;
     let address = config.socket_addr();
 

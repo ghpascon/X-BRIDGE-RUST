@@ -18,7 +18,10 @@ pub async fn list_users() -> Json<Vec<UserSummary>> {
     Json(
         users
             .into_iter()
-            .map(|u| UserSummary { id: u.id, name: u.name })
+            .map(|u| UserSummary {
+                id: u.id,
+                name: u.name,
+            })
             .collect(),
     )
 }
