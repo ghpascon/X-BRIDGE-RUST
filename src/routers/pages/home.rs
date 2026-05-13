@@ -12,7 +12,7 @@ pub async fn home(
     Extension(templates): Extension<Arc<Environment<'static>>>,
 ) -> Result<impl IntoResponse, AppError> {
     let template = templates
-        .get_template("home.html")
+        .get_template("/index/main.html")
         .map_err(|e| AppError::Internal(e.to_string()))?;
 
     let html = template

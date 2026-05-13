@@ -1,3 +1,4 @@
+pub mod api_doc;
 pub mod app;
 pub mod core;
 pub mod docs;

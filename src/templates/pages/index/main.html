@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %}
+<div class="flex flex-col items-center justify-center min-h-[60vh] px-4 py-12">
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-10 max-w-xl w-full text-center space-y-6">
+    <h2 class="text-3xl font-bold text-gray-900">{{ heading }}</h2>
+    <p class="text-gray-500 text-lg">{{ message }}</p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+      <a href="/docs"
+        class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-700 transition">
+        Swagger Docs
+      </a>
+      <a href="/api/v1/health/ping"
+        class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-900 text-gray-900 font-semibold rounded-xl hover:bg-gray-50 transition">
+        Health Ping
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

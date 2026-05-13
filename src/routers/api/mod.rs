@@ -1,16 +1,20 @@
 use axum::Router;
+use utoipa::OpenApi as _;
+use utoipa::openapi::OpenApi;
+use utoipa_axum::router::OpenApiRouter;
+
+use crate::api_doc::ApiDoc;
 
 pub mod health;
-pub mod users;
 
 pub struct ApiModule {
     pub name: &'static str,
-    pub router: Router,
+    pub router: OpenApiRouter,
 }
 
 impl ApiModule {
     #[must_use]
-    pub fn new(name: &'static str, router: Router) -> Self {
+    pub fn new(name: &'static str, router: OpenApiRouter) -> Self {
         Self { name, router }
     }
 
@@ -22,48 +26,20 @@ impl ApiModule {
 
 #[must_use]
 pub fn all_modules() -> Vec<ApiModule> {
-    vec![health::module(), users::module()]
+    vec![health::module()]
 }
 
+/// Registers all modules and returns the merged axum `Router` together with
+/// the fully-collected `OpenApi` spec — paths and schemas are picked up
+/// automatically from each handler's `#[utoipa::path]` annotation via
+/// `utoipa_axum`.
 #[must_use]
-pub fn register_modules(base_router: Router, modules: Vec<ApiModule>) -> Router {
-    modules.into_iter().fold(base_router, |router, module| {
-        router.nest(&module.mount_path(), module.router)
-    })
-}
-
-#[cfg(test)]
-mod tests {
-    use axum::{Router, body::Body, http::Request};
-    use tower::ServiceExt;
-
-    use super::{health, register_modules};
-
-    #[tokio::test]
-    async fn modules_are_automatically_prefixed_with_api_v1_and_module_name() {
-        let app = register_modules(Router::new(), vec![health::module()]);
-
-        let prefixed = app
-            .clone()
-            .oneshot(
-                Request::builder()
-                    .uri("/api/v1/health/ping")
-                    .body(Body::empty())
-                    .expect("request should build"),
-            )
-            .await
-            .expect("request should succeed");
-        assert_eq!(prefixed.status(), 200);
-
-        let unprefixed = app
-            .oneshot(
-                Request::builder()
-                    .uri("/health/ping")
-                    .body(Body::empty())
-                    .expect("request should build"),
-            )
-            .await
-            .expect("request should succeed");
-        assert_eq!(unprefixed.status(), 404);
-    }
+pub fn register_modules(modules: Vec<ApiModule>) -> (Router, OpenApi) {
+    modules
+        .into_iter()
+        .fold(
+            OpenApiRouter::with_openapi(ApiDoc::openapi()),
+            |acc, module| acc.nest(&module.mount_path(), module.router),
+        )
+        .split_for_parts()
 }

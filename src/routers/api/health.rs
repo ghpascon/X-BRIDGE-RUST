@@ -1,26 +1,30 @@
-use axum::{Json, Router, routing::get};
+use axum::{Json, http::StatusCode};
+use utoipa_axum::{router::OpenApiRouter, routes};
 
-use crate::schemas::health::HealthResponse;
-use crate::services::health_service::HealthService;
+use crate::{schemas::health::HealthResponse, services::health_service::HealthService};
 
 use super::ApiModule;
 
+/// Returns 200 OK when the service is running.
 #[utoipa::path(
     get,
-    path = "/api/v1/health/ping",
+    path = "/ping",
     tag = "health",
     responses(
         (status = 200, description = "Service is healthy", body = HealthResponse)
     )
 )]
-pub async fn ping() -> Json<HealthResponse> {
+pub async fn ping() -> (StatusCode, Json<HealthResponse>) {
     let status = HealthService::check();
-    Json(HealthResponse {
-        status: status.status,
-    })
+    (
+        StatusCode::OK,
+        Json(HealthResponse {
+            status: status.status,
+        }),
+    )
 }
 
 #[must_use]
 pub fn module() -> ApiModule {
-    ApiModule::new("health", Router::new().route("/ping", get(ping)))
+    ApiModule::new("health", OpenApiRouter::new().routes(routes!(ping)))
 }

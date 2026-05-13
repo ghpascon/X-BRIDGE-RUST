@@ -8,10 +8,8 @@ pub fn load_templates() -> Result<Environment<'static>, Box<dyn std::error::Erro
         "base.html",
         include_str!("../../templates/base.html").to_owned(),
     )?;
-    env.add_template_owned(
-        "home.html",
-        include_str!("../../templates/home.html").to_owned(),
-    )?;
+
+    // includes
     env.add_template_owned(
         "includes/header.html",
         include_str!("../../templates/includes/header.html").to_owned(),
@@ -19,6 +17,16 @@ pub fn load_templates() -> Result<Environment<'static>, Box<dyn std::error::Erro
     env.add_template_owned(
         "includes/footer.html",
         include_str!("../../templates/includes/footer.html").to_owned(),
+    )?;
+    env.add_template_owned(
+        "includes/alerts.html",
+        include_str!("../../templates/includes/alerts.html").to_owned(),
+    )?;
+
+    // pages
+    env.add_template_owned(
+        "/index/main.html",
+        include_str!("../../templates/pages/index/main.html").to_owned(),
     )?;
 
     Ok(env)
